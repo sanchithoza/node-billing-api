@@ -3,12 +3,12 @@ const fastify = require('fastify')();
 
 //Var
 var PORT =process.env.PORT || 3000;
-//routes
+
 fastify.register(require('fastify-jwt'), {
     secret: 'supersecret'
   });
 
-
+//routes
 fastify.register(require('./routes/users'),{prefix: '/users'});
 //fastify.register(require('./routes/products'),{prefix: '/products'});
 //fastify.register(require('./routes/transactions'),{prefix: '/transactions'});
