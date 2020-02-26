@@ -1,10 +1,7 @@
-//const user = require('./../db/db-users');
 const {client} = require('./../db/db-connect');
 const {SHA256} = require('crypto-js');
 const {authenticate} = require('./../middleware/authentication');
-const {sequelize} = require('./../models/sequelize.js');
 const User = require('./../models/users');
-//const JWT = require('fastify-jwt');
 
 async function routes(fastify,options){
     fastify.get('/demo',(req,res)=>{

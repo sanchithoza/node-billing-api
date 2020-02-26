@@ -1,5 +1,3 @@
-const {authenticate} = require('./../middleware/authentication');
-const {sequelize} = require('./../models/sequelize.js');
 const Persons = require('./../models/persons');
 
 async function routes(fastify,options){
