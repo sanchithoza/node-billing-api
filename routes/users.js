@@ -2,9 +2,16 @@
 const {client} = require('./../db/db-connect');
 const {SHA256} = require('crypto-js');
 const {authenticate} = require('./../middleware/authentication');
-const JWT = require('fastify-jwt');
+const {sequelize} = require('./../models/sequelize.js');
+const User = require('./../models/users');
+//const JWT = require('fastify-jwt');
+
 async function routes(fastify,options){
-    
+    fastify.get('/demo',(req,res)=>{
+        User.getAllUsers().then((result)=>{
+            res.send(result);
+        }).catch((e)=>res.send(e));
+    });
     fastify.get('/',(req,res)=>{
         try{
             var token = req.headers['x-auth'];
@@ -84,7 +91,6 @@ async function routes(fastify,options){
             })
             .catch((err) => {
                 console.log(err);
-                
                 res.status(400).send("no record found",err);    
             });
         });
@@ -186,7 +192,7 @@ const getAllUsers = () => {
 }
 
 const findUser = (username,hashPassword) => {
-    return client.query("select id,token from users where name = $1 and password = $2",[username,hashPassword])
+    return client.query("select id,name,token from users where name = $1 and password = $2",[username,hashPassword])
     .then((result)=>{
         return result.rows[0];
     })
