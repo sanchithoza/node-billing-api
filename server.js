@@ -3,7 +3,9 @@ const fastify = require('fastify')();
 
 var PORT =process.env.PORT || 3000;
 
-
+fastify.register(require('fastify-jwt'),{
+    secret:'supersecret'
+});
 //routes
 fastify.register(require('./routes/users'),{prefix: '/users'});
 fastify.register(require('./routes/persons'),{prefix:'/persons'});

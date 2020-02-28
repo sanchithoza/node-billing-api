@@ -1,11 +1,11 @@
 const {client} = require('./../db/db-connect');
-
+const User = require('./../models/users');
 var authenticate = (req) => {
   var token = req.headers['x-auth'];
   if(token){
-    return findByToken(token)
+    return User.findUserByToken(token)
     .then((user) => {
-      if (user.name === req.tokenData.name) {
+     if (user[0].dataValues.userName === req.tokenData.name) {
         return true;
       }else{
         return false;
@@ -19,16 +19,6 @@ var authenticate = (req) => {
     }).catch((err)=>reject("err",err));//Promise  
   }
 };
-
-
-const findByToken = (token) => {
-  return client.query("SELECT * FROM users WHERE token = $1", [token])
-  .then((result)=>{
-    return result.rows[0];
-  }).catch((err)=>{
-    return err;
-  });
-}
 
 module.exports = {
   authenticate

@@ -34,16 +34,6 @@ const User = sequelize.define('users', {
     // options
   });
 
-  var addUser = (req)=> {
-   return User.sync({ force: true }).then(() => {
-   //Now the `users` table in the database corresponds to the model definition
-      return User.create({
-      fullName: req.body.fullName,
-      userName: req.body.userName,
-      password: req.body.password
-    });
-  });
-  }; 
 var getAllUsers = () => {
   return User.findAll({
     attributes:['fullName','userName','role']
@@ -56,9 +46,72 @@ var getUserById = (id) => {
     }
   });
 };
+var addNewUser = (data)=> {
+  return User.sync({ force: true }).then(() => {
+  //Now the `users` table in the database corresponds to the model definition
+     return User.create({
+     fullName: data.fullName,
+     userName: data.userName,
+     password: data.password
+   },{
+   returning:true
+   });
+ });
+ }; 
 
+var updateUser = (id,data) => {
+  return User.update({
+    fullName: data.fullName,
+     userName: data.userName,
+     password: data.password
+  },{
+  returning:true,
+  where:{
+    id:id
+  }
+  });
+};
+var deleteUser = (id) => {
+  return User.destroy({
+    where:{
+      id:id
+    }
+  });
+};
+var userLogin = (uid,pass)=>{
+  return User.findOne({
+    where:{
+      userName:uid,
+      password:pass
+    }
+  });
+};
+var updateUserToken = (id,access,token)=>{
+  return User.update({
+    access:access,
+    token:token
+  },{
+    returning:true,
+    where:{
+      id:id
+    }
+  });
+};
+var findUserByToken = (token)=>{
+  return User.findAll({
+    where:{
+      token:token
+    }
+  });
+};
   module.exports = {
     User,
-    addUser,
-    getAllUsers
+    getAllUsers,
+    getUserById,
+    addNewUser,
+    updateUser,
+    deleteUser,
+    userLogin,
+    updateUserToken,
+    findUserByToken
   }

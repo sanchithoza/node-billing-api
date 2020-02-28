@@ -4,24 +4,21 @@ const {authenticate} = require('./../middleware/authentication');
 const User = require('./../models/users');
 
 async function routes(fastify,options){
-    fastify.get('/demo',(req,res)=>{
-        User.getAllUsers().then((result)=>{
-            res.send(result);
-        }).catch((e)=>res.send(e));
-    });
     fastify.get('/',(req,res)=>{
         try{
             var token = req.headers['x-auth'];
             var tokenData = fastify.jwt.verify(token);
             req.tokenData = tokenData;
+            
         }catch(e){
             console.log(e);
         }
         authenticate(req).then((result)=>{
-            if(!result){ 
+             if(!result){ 
+
                 res.status(400).send('Unable to authenticate user');    
             }
-            return getAllUsers();
+            return User.getAllUsers();
         }).then((result)=>{
             res.status(200).send(result);
         }).catch((err)=>{
@@ -41,9 +38,9 @@ async function routes(fastify,options){
             if(!result){ 
                 res.status(400).send('Unable to authenticate user');    
             }
-            return getUserDetails(req.params.id)
-            .then((row)=>{
-                res.status(200).send(row);
+            return User.getUserById(req.params.id)
+            .then((result)=>{
+                res.status(200).send(result);
             }).catch((err) => {
                 res.status(400).send('no record Found with given id');
             });
@@ -56,17 +53,23 @@ async function routes(fastify,options){
         .then((hash)=>{
             user.password = hash;
         })
-        .then(()=>createUser(user))
+        .then(()=>{
+            return User.addNewUser(user)
+        })
         .then((user)=>{
-            var id = user.id;
-            var name = user.name;
+            var id = user.dataValues.id;
+            var name = user.dataValues.userName;
             const token = fastify.jwt.sign({id,name}).toString();
-            return updateUserToken(user,token);
+            return User.updateUserToken(id,'full',token);
         })
         .then((user)=>{
-            res.header('x-auth',user.token).status(201).send({user});
+             res.header('x-auth',user.token).status(201).send({user});
         })
-        .catch((err)=>res.status(400).send("unable to insert record",err));
+        .catch((err)=>{
+            console.log(err);
+            
+            res.status(400).send("unable to insert record",err)
+        });
     });//add new user//signup
     
     fastify.patch('/:id',(req,res)=>{
@@ -81,16 +84,15 @@ async function routes(fastify,options){
             if(!result){ 
                 res.status(400).send('Unable to authenticate user');    
             }
-            return getUserDetails(req.params.id)
-            .then((rows)=>updateUser(req,rows))
-            .then((user)=>{
-                res.status(200).send({user});
+            return User.updateUser(req.params.id,req.body)
+        }).then((result)=>{
+                res.status(200).send({result});
             })
             .catch((err) => {
                 console.log(err);
                 res.status(400).send("no record found",err);    
             });
-        });
+      
     });//update existing user
     
     fastify.delete('/:id',(req,res)=>{
@@ -107,30 +109,27 @@ async function routes(fastify,options){
             if(!result){ 
                 res.status(400).send('Unable to authenticate user');    
             }
-            return getUserDetails(req.params.id)
-            .then((row)=>deleteUser(row))
-            .then((user)=>{
-                res.status(200).send({user});
+            return User.deleteUser(req.params.id)
+            }).then((result)=>{
+                res.status(200).send({result});
             })
             .catch((err) => {
                 res.status(400).send("no record found",err);
             });
-        });
     });//delete a user
     
     fastify.post('/login',(req,res)=>{
         var userCredentials = req.body;    
-        var user;
-        if(!userCredentials.name || !userCredentials.password){
+        if(!userCredentials.userName || !userCredentials.password){
             res.send('provide username and password');
         }else{
             hashPassword(userCredentials.password)
-            .then((hash)=>findUser(userCredentials.name,hash))            
+            .then((hash)=>User.userLogin(userCredentials.userName,hash))            
             .then((user)=>{
-                var id = user.id;
-                var name = user.name;
+                var id = user.dataValues.id;
+                var name = user.dataValues.userName;
                 const token = fastify.jwt.sign({id,name}).toString();
-                return updateUserToken(user,token);
+                return User.updateUserToken(id,'admin',token);
             })
             .then((user)=>{
                 res.header('x-auth',user.token).status(201).send({user});
@@ -146,63 +145,6 @@ const hashPassword = (password) => {
     return new Promise((resolve,reject)=>{
         resolve(SHA256(password).toString());
     }).catch((err)=>reject(err));
-};
-
-const createUser = (user)=>{
-    return client.query("INSERT INTO users(name, password, role)VALUES ($1, $2, $3) RETURNING *", [user.name, user.password, user.role])
-    .then((data)=> data.rows[0])
-    .catch((err)=> err);
-};
-
-const updateUserToken = (user,token) => {
-    const access = 'access';
-    user.token = token;
-    user.access = 'access';
-    return client.query("UPDATE users SET access=$1, token=$2  WHERE id = $3 RETURNING *",[access,token,user.id])
-    .then((result)=> result.rows[0])
-    .catch((err)=> err);
-};
-
-const updateUser = (req,rows) => {
-    var name = req.body.name || rows.name;
-    var password = req.body.password || rows.password;
-    var role = req.body.role || rows.role;
-    return client.query("UPDATE users SET name=$1, password=$2, role=$3 WHERE id = $4 RETURNING *",[name,password,role,req.params.id])
-    .then((result)=>result.rows[0])
-    .catch((err)=>err);
-};
-
-const deleteUser = (rows) => {
-    return client.query("delete from users where id = $1 RETURNING *",[rows.id])
-    .then((result)=>result.rows[0])
-    .catch((err)=> err);
-};
-
-const getAllUsers = () => {
-    return  client.query("select * from users")
-    .then((result)=> {
-        return result.rows;
-    })
-    .catch((err)=>{ 
-        return err;
-    });
-}
-
-const findUser = (username,hashPassword) => {
-    return client.query("select id,name,token from users where name = $1 and password = $2",[username,hashPassword])
-    .then((result)=>{
-        return result.rows[0];
-    })
-    .catch((err)=> err);
-}
-
-const getUserDetails = (id)=>{
-    return new Promise((resolve,reject)=>{
-        client.query("select * from users where id = $1",[id])
-        .then((result)=>{
-            resolve(result.rows[0]);
-        }).catch((e)=>reject(e));
-    });
 };
 
 

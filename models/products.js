@@ -23,20 +23,59 @@ const Product = sequelize.define('products',{
         //options
 });
 
-Product.sync({force:true}).then(()=>{
+/*Product.sync({force:true}).then(()=>{
     return Product.create({
         productName:'Keyboard',
         productCatagory:'input',
         manufacturedBy:'artis',
         serialNo:'art123'
     });
-});
+});*/
 
 var getAllProducts = () => {
     return Product.findAll();
 };
+var getProductById = (id)=>{
+    return Product.findByPk(id);
+};
+var addNewProduct = (data) =>{
+    return Product.sync({ force: false }).then(() => {
+        return Product.create({
+            productName:data.productName,
+            productCatagory:data.productCatagory,
+            manufacturedBy:data.manufacturedBy,
+            serialNo:data.serialNo
+          });
+        });
+};
+var updateProduct = (id,data) => {
+    return Product.update({
+        productName:data.productName,
+        productCatagory:data.productCatagory,
+        manufacturedBy:data.manufacturedBy,
+        serialNo:data.serialNo
+    },
+    {
+        returning: true, 
+        where: {
+            id:id
+        } 
+    });
+};
+var deleteProduct = (id) => {
+    return Product.destroy({
+        returning:true,
+        where:{
+            id : id
+        }
+    });
+};
 
 module.exports = {
     Product,
-    getAllProducts
+    getAllProducts,
+    getProductById,
+    addNewProduct,
+    updateProduct,
+    deleteProduct
 }
