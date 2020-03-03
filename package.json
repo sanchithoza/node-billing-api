@@ -10,12 +10,11 @@
   "author": "Sanchit Oza",
   "license": "ISC",
   "dependencies": {
-    "ajv": "^6.11.0",
     "crypto-js": "^4.0.0",
     "fastify": "^2.12.0",
     "fastify-jwt": "^1.2.1",
     "fastify-postgres": "^2.0.0",
-    "pg": "^7.18.1",
-    "sequelize": "^5.21.5"
+    "knex": "^0.20.10",
+    "pg": "^7.18.1"
   }
 }

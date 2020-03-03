@@ -1,10 +1,11 @@
-const {client} = require('./../db/db-connect');
-const {SHA256} = require('crypto-js');
-const {authenticate} = require('./../middleware/authentication');
-const User = require('./../models/users');
-
+//const {SHA256} = require('crypto-js');
+//const {authenticate} = require('./../middleware/authentication');
+//const User = require('./../models/users');
+//const knex = require('./../db/knex');
+const {insert} = require('./../db/insert');
 async function routes(fastify,options){
-    fastify.get('/',(req,res)=>{
+    
+      var authentic = (req,reply,done)=>{
         try{
             var token = req.headers['x-auth'];
             var tokenData = fastify.jwt.verify(token);
@@ -15,11 +16,19 @@ async function routes(fastify,options){
         }
         authenticate(req).then((result)=>{
              if(!result){ 
-
                 res.status(400).send('Unable to authenticate user');    
             }
-            return User.getAllUsers();
-        }).then((result)=>{
+            console.log("at pre");
+            done()
+        });
+    };
+    fastify.post('/demo',(req,res)=>{
+        insert('persons',req.body).then((result)=>{
+            res.status(200).send(result);
+        }).catch((err)=>res.status(400).send(err));
+    });
+   /* fastify.get('/', {preHandler:authentic},(req,res)=>{
+        User.getAllUsers().then((result)=>{
             res.status(200).send(result);
         }).catch((err)=>{
             res.status(400).send(err.message);
@@ -136,7 +145,7 @@ async function routes(fastify,options){
             })
             .catch((err)=>res.status(400).send("Unable to Login",err));
         }
-    });//user login
+    });//user login*/
 }
 
 

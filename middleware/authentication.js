@@ -1,4 +1,4 @@
-const {client} = require('./../db/db-connect');
+
 const User = require('./../models/users');
 var authenticate = (req) => {
   var token = req.headers['x-auth'];
