@@ -1,28 +1,48 @@
-const Product = require('./../models/products');
-
+const {insert,read,readAll,update,del}=require('./../db/crud');
+const {authenticate} = require('./../middleware/authentication');
 async function routes(fastify,options){
-     fastify.get('/',(req,res) => {
-        Product.getAllProducts().then((result)=>{
+    var authentic = (req,res,done)=>{
+        try{
+            var token = req.headers['x-auth'];
+            var tokenData = fastify.jwt.verify(token);
+            req.tokenData = tokenData;
+        }catch(e){
+            console.log(e);
+        }
+        authenticate(req).then((result)=>{
+            if(!result){ 
+                res.status(400).send('Unable to authenticate user');    
+            }
+            done()
+        });
+    };
+    //get all products
+    fastify.get('/',{preHandler:authentic},(req,res) => {
+        readAll('products').then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>res.status(400).send(e));
     });
-   fastify.get('/:id',(req,res)=>{
-        Product.getProductById(req.params.id).then((result)=>{
+    //get product by id
+   fastify.get('/:id',{preHandler:authentic},(req,res)=>{
+        read('products',req.params.id).then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>res.status(400).send(e));
     });
-    fastify.post('/',(req,res)=>{
-        Product.addNewProduct(req.body).then((result)=>{
+    //add new product
+    fastify.post('/',{preHandler:authentic},(req,res)=>{
+        insert('products',req.body).then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>res.status(400).send(e));
     });
-    fastify.patch('/:id',(req,res)=>{
-        Product.updateProduct(req.params.id,req.body).then((result)=>{
+    //update product by id
+    fastify.patch('/:id',{preHandler:authentic},(req,res)=>{
+        update('products',req.body,req.params.id).then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>res.status(400).send(e));
     });
-    fastify.delete('/:id',(req,res)=>{  
-        Product.deleteProduct(req.params.id).then((result)=>{
+    //delete product by id
+    fastify.delete('/:id',{preHandler:authentic},(req,res)=>{  
+        del('products',req.params.id).then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>res.status(400).send(e));
     });

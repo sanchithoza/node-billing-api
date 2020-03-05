@@ -1,11 +1,13 @@
 
-const User = require('./../models/users');
+const {readByToken} = require('./../db/crud');
 var authenticate = (req) => {
   var token = req.headers['x-auth'];
+
   if(token){
-    return User.findUserByToken(token)
+    //verifying user token from db and request header
+    return readByToken('users',{token})
     .then((user) => {
-     if (user[0].dataValues.userName === req.tokenData.name) {
+       if (user[0].id === req.tokenData.id) {
         return true;
       }else{
         return false;
