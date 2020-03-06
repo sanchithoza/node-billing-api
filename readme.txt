@@ -1,6 +1,6 @@
-//config to store envieonment detail --dev--test--production
-//db to store database connection
-//middleware to create middleware like authantications
-//test to store test cases on each request and response
+//db to store database connection and all other database operation usin KNEXJS
+    //migrations to populate db with tables
     //seed to generate testing data
+//middleware to create middleware  authantications
 //server.js Main file handling requests and response
+//routes files to manage routes based on db tables
