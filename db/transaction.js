@@ -31,7 +31,7 @@ const readTransactionDetail = (table,id)=>{
        })
        .then(([res,result])=>{
            result[0].user = res[0].fullName;
-        //getiinf transaction details and adding to result array
+        //getting transaction details and adding to result array
        return Promise.all([readWhere('transactionDetails',{transactionId:result[0].id}),result])
        })
         .then(([detail,result])=>{
@@ -40,6 +40,7 @@ const readTransactionDetail = (table,id)=>{
         return getProductName(result[0])
         })
         .then((data)=>{  
+            //calculations to make various totals for amount and taxes
             data.totalTax = 0;
             data.netAmount = 0;
             data.grossAmount = 0;
@@ -61,9 +62,12 @@ const readTransactionDetail = (table,id)=>{
             data.grossAmount += element.totalPrice;     
           });
          return data;
-        })
+        }).catch((err)=>{
+            return err;
+        });
 
     };
+//function to get productName
 async function getProductName(data){
     
      for(var i=0;i<data.detail.length;i++){

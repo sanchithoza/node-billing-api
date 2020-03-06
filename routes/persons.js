@@ -1,6 +1,7 @@
 const {insert,read,readAll,update,del}=require('./../db/crud');
 const {authenticate} = require('./../middleware/authentication');
 async function routes(fastify,options){
+    //function to authenticate request
     var authentic = (req,res,done)=>{
         try{
             var token = req.headers['x-auth'];
@@ -9,6 +10,7 @@ async function routes(fastify,options){
         }catch(e){
             console.log(e);
         }
+        //calling authenticate middleware to verify access token
         authenticate(req).then((result)=>{
             if(!result){ 
                 res.status(400).send('Unable to authenticate user');    

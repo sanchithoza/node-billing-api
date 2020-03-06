@@ -11,6 +11,7 @@ const readAll = (table)=>{
 const read = (table,id)=>{
     return knex.select().table(table).where('id',id);
 }
+//fetch data based on condition eg. {'personId':id}
 const readWhere = (table,filter)=>{
     return knex.select().table(table).where(filter);
 }
