@@ -10,7 +10,7 @@ fastify.register(require('fastify-jwt'),{
 fastify.register(require('./routes/users'),{prefix: '/users'});
 fastify.register(require('./routes/persons'),{prefix:'/persons'});
 fastify.register(require('./routes/products'),{prefix:'/products'});
-//fastify.register(require('./routes/transactions'),{prefix: '/transactions'});
+fastify.register(require('./routes/transactions'),{prefix: '/transactions'});
 //Listener
 fastify.listen(PORT,(err,address)=>{
     if(err){

@@ -17,7 +17,7 @@ async function routes(fastify,options){
         });
     };
     //get all persons
-    fastify.get('/',{preHandler:authentic},(req,res)=>{
+    fastify.get('/',(req,res)=>{
         readAll('persons').then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>res.status(400).send(e));

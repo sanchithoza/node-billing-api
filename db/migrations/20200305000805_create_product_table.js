@@ -6,6 +6,7 @@ exports.up = function(knex) {
     table.string('productCategory').notNullable()
     table.string('company')
     table.string('serialNo')
+    table.integer('availableStock')
   }).then(() => console.log("Product table created"))
   .catch((err) => { console.log(err); throw err });
 };

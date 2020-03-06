@@ -1,6 +1,7 @@
 const {SHA256} = require('crypto-js');
 const {authenticate} = require('./../middleware/authentication');
-const {insert,readAll,read,update,del,login} = require('./../db/crud');
+const {insert,readAll,read,update,del} = require('./../db/crud');
+const {login} = require('./../db/user');
 async function routes(fastify,options){
     //getting token from header in preHandler to verify the token
     var authentic = (req,res,done)=>{

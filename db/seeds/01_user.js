@@ -4,6 +4,12 @@ exports.seed = function(knex,Promise) {
   return knex('users').del()
     .then(function () {
       // Inserts seed entries
+      /*"fullName":"sanchit oza",
+         "userName":"sanchit",
+          "password":"1234" ,
+          "role":"admin",
+          "access":"full",
+          "token":"null"*/
       return knex('users').insert([
         {
           fullName: 'sanchit oza',

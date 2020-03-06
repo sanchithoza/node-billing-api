@@ -6,18 +6,18 @@ exports.seed = function(knex) {
       // Inserts seed entries
       return knex('products').insert([
         {
-          id: 1, 
           productName: 'mk210',
           productCategory:'KeyboardMouseCombo',
           company:'zebronics',
-          serialNo:'zebmk210'
+          serialNo:'zebmk210',
+          availableStock:0
         },
-        {
-          id: 2, 
+        { 
           productName: 'zeb Dash',
           productCategory:'MouseWireless',
           company:'logitech',
-          serialNo:'logMWL222'
+          serialNo:'logMWL222',
+          availableStock:0
         }
       ]);
     });
