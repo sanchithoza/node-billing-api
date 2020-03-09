@@ -2,6 +2,8 @@ const { SHA256 } = require('crypto-js');
 const { authenticate } = require('./../middleware/authentication');
 const { insert, readAll, read, update, del } = require('./../db/crud');
 const { login } = require('./../db/user');
+const { loginSchema,signupSchema,updateUserSchema } = require('./../schema/userSchema');
+const fs = require('fs');
 /* var Ajv = require('ajv');
 var ajv = new Ajv(); */
 async function routes(fastify, options) {
@@ -23,13 +25,13 @@ async function routes(fastify, options) {
         });
     };
     //Add New User
-    fastify.post('/', (req, res) => {
+    fastify.post('/',{ preHandler: authentic }, (req, res) => {
         insert('users', req.body).then((result) => {
             res.status(200).send(result);
         }).catch((err) => res.status(400).send(err));
     });
     //get All Users
-    fastify.get('/', (req, res) => {
+    fastify.get('/', { preHandler: authentic },(req, res) => {
         readAll('users').then((result) => {
             res.status(200).send(result);
         }).catch((err) => res.status(400).send(err));
@@ -41,7 +43,14 @@ async function routes(fastify, options) {
         }).catch((err) => res.status(400).send(err));
     });
     //update user by id
-    fastify.patch('/:id', (req, res) => {
+    fastify.patch('/:id',{
+        schema:updateUserSchema,
+        attachValidation:true,
+        preHandler:authentic
+    } ,(req, res) => {
+        if(req.validationError){
+            res.status(422).send(req.validationError);
+        }
         update('users', req.body, req.params.id).then((result) => {
             res.status(300).send(result);
         }).catch((err) => res.status(400).send(err));
@@ -52,31 +61,17 @@ async function routes(fastify, options) {
             res.status(200).send(result);
         }).catch((err) => res.status(400).send(err));
     });
-    //validating request body on login request
-    const loginSchema = {
-        body: {
-            type: 'object',
-            required: ['userName', 'password'],
-            properties: {
-                userName: {
-                    "type": "string",
-                },
-                password: {
-                    "type": "string",
-                    "minLength": 5
-                }
-            }
-        }
-    }
+   
     //user login generating token
     fastify.post('/login', {
         schema: loginSchema,
         attachValidation: true
     }, (req, res) => {
-        //hashing password
+        
         if (req.validationError) {
             res.status(422).send(req.validationError);
         }
+        //hashing password
         req.body.password = SHA256(req.body.password).toString();
         //sending login credentials for db verification
         login('users', req.body).then((result) => {
@@ -99,7 +94,15 @@ async function routes(fastify, options) {
             });
     });
     //user signup with token
-    fastify.post('/signup', (req, res) => {
+    fastify.post('/signup',{
+        schema:signupSchema,
+        attachValidation:true
+    },(req, res) => {
+        if (req.validationError) {
+            res.status(422).send(req.validationError);
+        }
+        console.log(req.body);
+        
         //hashing password
         req.body.password = SHA256(req.body.password).toString();
         //generating token
@@ -109,7 +112,5 @@ async function routes(fastify, options) {
             res.header('x-auth', result[0].token).status(200).send(result);
         }).catch((err) => res.status(400).send(err));
     });
-
-
 };
 module.exports = routes;

@@ -7,9 +7,10 @@ exports.up = function(knex) {
     table.string('transactionMode').notNullable()
     table.integer('personId').notNullable()
     table.integer('userId').notNullable()
-    table.float('netAmount').notNullable()
-    table.float('totalTax').notNullable()
-    table.float('grossAmount').notNullable()
+    table.float('taxableAmount').notNullable()
+    table.float('gstRate')
+    table.float('totalGst')
+    table.float('grandTotal').notNullable()
   }).then(()=>console.log("transaction table created"))
   .catch((err)=>{
     console.log(err);

@@ -1,5 +1,6 @@
 const { insert, read, readAll, update, del } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
+const { addProductSchema } = require('./../schema/productSchema');
 async function routes(fastify, options) {
     var authentic = (req, res, done) => {
         try {
@@ -29,10 +30,21 @@ async function routes(fastify, options) {
         }).catch((e) => res.status(400).send(e));
     });
     //add new product
-    fastify.post('/', { preHandler: authentic }, (req, res) => {
+    fastify.post('/', { 
+        schema:addProductSchema,
+        attachValidation:true,
+        preHandler: authentic
+     }, (req, res) => {
+         if(req.validationError){
+            res.status(422).send(req.validationError);
+         }
         insert('products', req.body).then((result) => {
             res.status(200).send(result);
-        }).catch((e) => res.status(400).send(e));
+        }).catch((e) => {
+            //console.log(e);
+            
+            res.status(400).send(e)
+        });
     });
     //update product by id
     fastify.patch('/:id', { preHandler: authentic }, (req, res) => {

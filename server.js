@@ -2,11 +2,12 @@
 const fastify = require('fastify')();
 
 var PORT = process.env.PORT || 3000;
-//registering jwt plugin with fastify
+//fastify cors to enable access from other server/environment
 fastify.register(require('fastify-cors'), {
-    // put your options here
+// put your options here
     origin: true
-})
+});
+//registering jwt plugin with fastify
 fastify.register(require('fastify-jwt'), {
     secret: 'supersecret'
 });

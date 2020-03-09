@@ -1,11 +1,15 @@
 const knex = require('./knex.js');
 const { read, readWhere, insert } = require('./crud');
 const addNewTransaction = (table, data) => {
+    
+    
     var transaction = data[0];
     var transactionDetail = data[1];
+    console.log(transactionDetail);
     //adding common detail of transaction to transactions table
     return Promise.all([insert(table, transaction), transactionDetail])
         .then((result) => {
+            console.log(result[1]);
             result[1].detail.forEach(element => {
                 element.transactionId = result[0][0].id;
             });
@@ -30,7 +34,7 @@ const readTransactionDetail = (table, id) => {
             return Promise.all([read('users', result[0].userId), result])
         })
         .then(([res, result]) => {
-            result[0].user = res[0].fullName;
+           result[0].user = res[0].fullName;
             //getting transaction details and adding to result array
             return Promise.all([readWhere('transactionDetails', { transactionId: result[0].id }), result])
         })
@@ -41,26 +45,6 @@ const readTransactionDetail = (table, id) => {
         })
         .then((data) => {
             //calculations to make various totals for amount and taxes
-            data.totalTax = 0;
-            data.netAmount = 0;
-            data.grossAmount = 0;
-            data.detail.forEach(element => {
-                element.totalPrice = element.price;
-                if (element.igstRate) {
-                    element.igstAmt = element.price * (element.igstRate / 100);
-                    data.totalTax += element.igstAmt;
-                    element.totalPrice += element.igstAmt;
-                } else {
-                    element.cgstAmt = element.price * (element.cgstRate / 100);
-                    data.totalTax += element.cgstAmt;
-                    element.totalPrice += element.cgstAmt;
-                    element.sgstAmt = element.price * (element.sgstRate / 100);
-                    data.totalTax += element.sgstAmt;
-                    element.totalPrice += element.sgstAmt;
-                }
-                data.netAmount += element.price;
-                data.grossAmount += element.totalPrice;
-            });
             return data;
         }).catch((err) => {
             return err;
@@ -73,7 +57,7 @@ async function getProductName(data) {
     for (var i = 0; i < data.detail.length; i++) {
         //fetch product name 
         await read('products', data.detail[i].productId).then((res) => {
-            data.detail[i].product = res[0].productName;
+            data.detail[i].product = res[0].name;
         });
     };
     return data;

@@ -1,0 +1,29 @@
+
+const addProductSchema = {
+    body:{
+        type:'object',
+        required:['productName','productCategory'],
+        properties:{
+            productName:{
+                "type":"string",
+                "minLength":1
+            },
+            productCategory:{
+                "type":"string",
+                "minLength":1
+            },
+            company:{
+                "type":"string"
+            },
+            serialNo:{
+                "type":"string"
+            },
+            availableStock:{
+                "type":"string"
+            }
+        }
+    }
+}
+module.exports={
+    addProductSchema
+}

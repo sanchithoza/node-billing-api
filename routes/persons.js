@@ -1,5 +1,6 @@
 const { insert, read, readAll, update, del } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
+const { addPersonSchema } = require('./../schema/personSchema');
 async function routes(fastify, options) {
     //function to authenticate request
     var authentic = (req, res, done) => {
@@ -19,7 +20,7 @@ async function routes(fastify, options) {
         });
     };
     //get all persons
-    fastify.get('/', (req, res) => {
+    fastify.get('/',{ preHandler: authentic },(req, res) => {
         readAll('persons').then((result) => {
             res.status(200).send(result);
         }).catch((e) => res.status(400).send(e));
@@ -31,11 +32,20 @@ async function routes(fastify, options) {
         }).catch((e) => res.status(400).send(e));
     });
     //add a new person
-    fastify.post('/', { preHandler: authentic }, (req, res) => {
+    fastify.post('/', { 
+        schema:addPersonSchema,
+        attachValidation:true,
+        preHandler: authentic
+    }, (req, res) => {
+        if (req.validationError) {
+            res.status(422).send(req.validationError);
+        }
         insert('persons', req.body).then((result) => {
             res.status(200).send(result);
         }).catch((e) => {
-            res.status(400).send('erroe >', e)
+            console.log(e);
+            
+            res.status(400).send('error >', e)
         });
     });
     //update person by id

@@ -6,18 +6,20 @@ exports.seed = function(knex) {
       // Inserts seed entries
       return knex('products').insert([
         {
-          productName: 'mk210',
-          productCategory:'KeyboardMouseCombo',
+          name: 'mk210',
+          hsncode:'5410',
+          category:'mouse',
           company:'zebronics',
-          serialNo:'zebmk210',
-          availableStock:0
+          serialNo:'zeb0987',
+          stock:10
         },
         { 
-          productName: 'zeb Dash',
-          productCategory:'MouseWireless',
+          name: 'b200',
+          hsncode:'5410',
+          category:'mouse',
           company:'logitech',
-          serialNo:'logMWL222',
-          availableStock:0
+          serialNo:'b200',
+          stock:10
         }
       ]);
     });
