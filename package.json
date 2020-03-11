@@ -17,6 +17,7 @@
     "fastify-jwt": "^1.2.1",
     "fastify-postgres": "^2.0.0",
     "knex": "^0.20.10",
+    "lodash": "^4.17.15",
     "pg": "^7.18.1"
   }
 }
