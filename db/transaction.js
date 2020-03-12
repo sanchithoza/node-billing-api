@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const knex = require('./knex.js');
-const { read, readWhere, insert, del, deleteWhere,update } = require('./crud');
+const { read, readWhere, insert, del, deleteWhere, update } = require('./crud');
 const addNewTransaction = (table, data) => {
     var transaction = data[0];
     var transactionDetail = data[1];
@@ -15,7 +15,7 @@ const addNewTransaction = (table, data) => {
         })
         .then((result) => {
             //to update stock on purchase transaction
-            updateStock(result);   
+            updateStock(result);
             return result;
         }).catch((err) => {
             return err;
@@ -51,31 +51,30 @@ const readTransactionDetail = (table, id) => {
 };
 const deleteTransaction = (table, id) => {
     //get details of transaction to be deleted
-    return readTransactionDetail(table,id)
-    .then((result)=>{
-       //first deletes all entries from transactionDetails table as per given transaction Id
-    return Promise.all ([deleteWhere('transactionDetails', { 'transactionId': id }),result]);
-    }).then((result) => {
-        //after deleting associated entries from transactionDetails it will delete transaction entry
-        //from transaction table
-       updateStockOnDelete(result[1]);
-        return del(table, id);
-    }).then((result) => {
-        //console.log(result);
-        return result;
-    }).catch((err) => {
-        return err;
-    });
+    return readTransactionDetail(table, id)
+        .then((result) => {
+            //first deletes all entries from transactionDetails table as per given transaction Id
+            return Promise.all([deleteWhere('transactionDetails', { 'transactionId': id }), result]);
+        }).then((result) => {
+            //after deleting associated entries from transactionDetails it will delete transaction entry
+            //from transaction table
+            updateStockOnDelete(result[1]);
+            return del(table, id);
+        }).then((result) => {
+            //console.log(result);
+            return result;
+        }).catch((err) => {
+            return err;
+        });
 }
 
 const updateTransaction = (table, data, id) => {
-    return deleteTransaction(table,id).then((result)=>{
+    return deleteTransaction(table, id).then((result) => {
         console.log("delete :", result);
-        
-        return addNewTransaction(table,data).then((result)=>{
+        return addNewTransaction(table, data).then((result) => {
             console.log("insert :", result);
-        }).catch((err)=>{
-            console.log("err : ",err);
+        }).catch((err) => {
+            console.log("err : ", err);
         });
     })
 
@@ -92,48 +91,50 @@ async function getProductName(data) {
     };
     return data;
 }
-//function to update stock on Purchase-Sales & Returns
-function updateStock(result){
-    //console.log(result[0].transactionType);            
-    if(result[0].transactionType == 'Sales' || result[0].transactionType == 'PurchaseReturn'){
+//function to update stock on Add Transaction event
+function updateStock(result) {
+    //when product comes in      
+    if (result[0].transactionType == 'Sales' || result[0].transactionType == 'PurchaseReturn') {
         result[1].forEach(element => {
-            knex.raw(`update products set stock = stock - ${element.qty}  where id = ${element.productId} returning stock`).then((result)=>{
+            knex.raw(`update products set stock = stock - ${element.qty}  where id = ${element.productId} returning stock`).then((result) => {
                 console.log('Stock Updated Success.');
-            }).catch((err)=>{
-                console.log('error in updating stock'); 
+            }).catch((err) => {
+                console.log('error in updating stock');
             });
         });
     }
-    else if(result[0].transactionType == 'Purchase' || result[0].transactionType == 'SalesReturn'){
+    //when product goes out
+    else if (result[0].transactionType == 'Purchase' || result[0].transactionType == 'SalesReturn') {
         result[1].forEach(element => {
-            knex.raw(`update products set stock = stock + ${element.qty}  where id = ${element.productId} returning stock`).then((result)=>{
+            knex.raw(`update products set stock = stock + ${element.qty}  where id = ${element.productId} returning stock`).then((result) => {
                 console.log('Stock Updated Success.');
-            }).catch((err)=>{
-                console.log('error in updating stock'); 
+            }).catch((err) => {
+                console.log('error in updating stock');
             });
         });
-    }   
+    }
 };
-function updateStockOnDelete(result){
-    //console.log("function :",result.transactionType);
-    if(result.transactionType == 'Sales' || result.transactionType == 'PurchaseReturn'){
+function updateStockOnDelete(result) {
+    //when deleting outward of product
+    if (result.transactionType == 'Sales' || result.transactionType == 'PurchaseReturn') {
         result.detail.forEach(element => {
-            knex.raw(`update products set stock = stock + ${element.qty}  where id = ${element.productId} returning stock`).then((result)=>{
+            knex.raw(`update products set stock = stock + ${element.qty}  where id = ${element.productId} returning stock`).then((result) => {
                 console.log('Stock Updated Success.');
-            }).catch((err)=>{
-                console.log('error in updating stock'); 
+            }).catch((err) => {
+                console.log('error in updating stock');
             });
         });
     }
-    else if(result.transactionType == 'Purchase' || result.transactionType == 'SalesReturn'){
+    //when deleting inward of product
+    else if (result.transactionType == 'Purchase' || result.transactionType == 'SalesReturn') {
         result.detail.forEach(element => {
-            knex.raw(`update products set stock = stock - ${element.qty}  where id = ${element.productId} returning stock`).then((result)=>{
+            knex.raw(`update products set stock = stock - ${element.qty}  where id = ${element.productId} returning stock`).then((result) => {
                 console.log('Stock Updated Success.');
-            }).catch((err)=>{
-                console.log('error in updating stock'); 
+            }).catch((err) => {
+                console.log('error in updating stock');
             });
         });
-    }   
+    }
 }
 module.exports = {
     readTransactionDetail,
