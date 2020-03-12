@@ -1,5 +1,6 @@
 const { insert, read, readAll, update, del } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
+const { salesRecord } = require('./../db/product');
 const { addProductSchema } = require('./../schema/productSchema');
 async function routes(fastify, options) {
     var authentic = (req, res, done) => {
@@ -57,6 +58,12 @@ async function routes(fastify, options) {
         del('products', req.params.id).then((result) => {
             res.status(200).send(result);
         }).catch((e) => res.status(400).send(e));
+    });
+    //get product sales records using filter
+    fastify.post('/sales',{ preHandler:authentic },(req,res)=>{
+        salesRecord(req.body).then((result)=>{
+            res.status(200).send(result);
+        }).catch((e)=>{res.status(400).send(e)})
     });
 };
 

@@ -21,7 +21,7 @@ async function routes(fastify, options) {
         });
     };
     //get all persons
-    fastify.get('/',{ preHandler: authentic },(req, res) => {
+    fastify.get('/', { preHandler: authentic }, (req, res) => {
         readAll('persons').then((result) => {
             res.status(200).send(result);
         }).catch((e) => res.status(400).send(e));
@@ -33,9 +33,9 @@ async function routes(fastify, options) {
         }).catch((e) => res.status(400).send(e));
     });
     //add a new person
-    fastify.post('/', { 
-        schema:addPersonSchema,
-        attachValidation:true,
+    fastify.post('/', {
+        schema: addPersonSchema,
+        attachValidation: true,
         preHandler: authentic
     }, (req, res) => {
         if (req.validationError) {
@@ -45,7 +45,7 @@ async function routes(fastify, options) {
             res.status(200).send(result);
         }).catch((e) => {
             console.log(e);
-            
+
             res.status(400).send('error >', e)
         });
     });
@@ -62,10 +62,10 @@ async function routes(fastify, options) {
         }).catch((e) => res.status(400).send(e));
     });
     //geting a personl account
-    fastify.get('/account/:id',{preHandler:authentic},(req,res)=>{
-        getPersonalAccount(req.params.id).then((result)=>{
+    fastify.get('/account/:id', { preHandler: authentic }, (req, res) => {
+        getPersonalAccount(req.params.id).then((result) => {
             res.status(200).send(result);
-        }).catch((err)=>res.status(400).send(err));
+        }).catch((err) => res.status(400).send(err));
     });
 };
 module.exports = routes;
