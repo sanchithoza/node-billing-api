@@ -7,3 +7,10 @@
 //Schema files to verify incomin data with post-patch request using fastify.routes operation
 
 //add invoiceNumber field in transaction table
+
+
+
+//for range search
+//whereBetween — .whereBetween(column, range) / .orWhereBetween
+knex('users').whereBetween('votes', [1, 100])
+
