@@ -4,8 +4,8 @@ const insert = (table, data) => {
     return knex(table).insert(data).returning('*');
 };
 //fetch all data from specefied table
-const readAll = (table) => {
-    return knex.select().table(table);
+const readAll = async (table) => {
+    return await knex.select().table(table);
 };
 //fetch data of given id from specefied table
 const read = (table, id) => {

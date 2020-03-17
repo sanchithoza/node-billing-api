@@ -20,7 +20,7 @@ var addTransactionSchema = {
                     minItems: 1,
                     items: [{
                         type: 'object',
-                        required: ['productId', 'qty', 'unit', 'taxablePrice'],
+                        required: ['productId', 'qty', 'unit', 'taxablePrice','amount'],
                         properties: {
                             productId: { type: 'number' },
                             qty: { type: 'number' },

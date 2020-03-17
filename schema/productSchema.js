@@ -2,13 +2,17 @@
 const addProductSchema = {
     body:{
         type:'object',
-        required:['productName','productCategory'],
+        required:['name','category','hsncode'],
         properties:{
-            productName:{
+            name:{
                 "type":"string",
                 "minLength":1
             },
-            productCategory:{
+            category:{
+                "type":"string",
+                "minLength":1
+            },
+            hsncode:{
                 "type":"string",
                 "minLength":1
             },

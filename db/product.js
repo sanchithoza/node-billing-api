@@ -1,8 +1,8 @@
 const _ = require('lodash')
 const { readWhere } = require('./crud');
-const salesRecord = (data) => {
+const records = (type,data) => {
     //get all sales transactions
-    return readWhere('transactions', { transactionType: 'Sales' })
+    return readWhere('transactions', { transactionType: type })
         .then((result) => {
             //get filtered transactions as per the filters specefied in req.body
             return Promise.all([result, readWhere('transactionDetails', data)]);
@@ -26,7 +26,7 @@ const salesRecord = (data) => {
 
                 });
             });
-            data.push({ "totalSales": _.sumBy(data, 'productPrice') });
+            data.push({ "Total Amount": _.sumBy(data, 'productPrice') });
             return data;
         }).catch((err) => {
             return err;
@@ -34,5 +34,5 @@ const salesRecord = (data) => {
 };
 
 module.exports = {
-    salesRecord
+    records
 }

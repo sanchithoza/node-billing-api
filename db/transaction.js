@@ -43,7 +43,6 @@ const readTransactionDetail = (table, id) => {
             return getProductName(result[0])
         })
         .then((data) => {
-            //calculations to make various totals for amount and taxes
             return data;
         }).catch((err) => {
             return err;

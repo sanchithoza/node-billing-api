@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles"
   },
   "author": "Sanchit Oza",
   "license": "ISC",
@@ -16,8 +16,13 @@
     "fastify-cors": "^3.0.2",
     "fastify-jwt": "^1.2.1",
     "fastify-postgres": "^2.0.0",
+    "fastify-swagger": "^2.5.0",
     "knex": "^0.20.10",
     "lodash": "^4.17.15",
     "pg": "^7.18.1"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "supertest": "^4.0.2"
   }
 }

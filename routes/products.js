@@ -1,6 +1,6 @@
 const { insert, read, readAll, update, del } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
-const { salesRecord } = require('./../db/product');
+const { records } = require('./../db/product');
 const { addProductSchema } = require('./../schema/productSchema');
 async function routes(fastify, options) {
     var authentic = (req, res, done) => {
@@ -36,13 +36,15 @@ async function routes(fastify, options) {
         attachValidation:true,
         preHandler: authentic
      }, (req, res) => {
+        // console.log("route : ",req);
+         
          if(req.validationError){
             res.status(422).send(req.validationError);
          }
         insert('products', req.body).then((result) => {
             res.status(200).send(result);
         }).catch((e) => {
-            //console.log(e);
+            console.log(e);
             
             res.status(400).send(e)
         });
@@ -60,8 +62,10 @@ async function routes(fastify, options) {
         }).catch((e) => res.status(400).send(e));
     });
     //get product sales records using filter
-    fastify.post('/sales',{ preHandler:authentic },(req,res)=>{
-        salesRecord(req.body).then((result)=>{
+    //:type can be -> Sales, Purchase, SalesReturn, PurchaseReturn
+    //Filter has to be json eg : { id:2 }
+    fastify.post('/resords/:type',{ preHandler:authentic },(req,res)=>{
+        records(req.params.type,req.body).then((result)=>{
             res.status(200).send(result);
         }).catch((e)=>{res.status(400).send(e)})
     });

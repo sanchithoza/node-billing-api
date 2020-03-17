@@ -1,4 +1,3 @@
-
 const { readByToken } = require('./../db/user');
 var authenticate = (req) => {
   var token = req.headers['x-auth']

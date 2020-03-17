@@ -14,3 +14,8 @@
 //whereBetween — .whereBetween(column, range) / .orWhereBetween
 knex('users').whereBetween('votes', [1, 100])
 
+//required fields in schemas must match with notNull columns in database table
+
+//impliment test cases for all routes
+
+//impliment swager for api documentation
