@@ -31,21 +31,19 @@ async function routes(fastify, options) {
         }).catch((e) => res.status(400).send(e));
     });
     //add new product
-    fastify.post('/', { 
-        schema:addProductSchema,
-        attachValidation:true,
+    fastify.post('/', {
+        schema: addProductSchema,
+        attachValidation: true,
         preHandler: authentic
-     }, (req, res) => {
-        // console.log("route : ",req);
-         
-         if(req.validationError){
+    }, (req, res) => {
+        if (req.validationError) {
             res.status(422).send(req.validationError);
-         }
+        }
         insert('products', req.body).then((result) => {
             res.status(200).send(result);
         }).catch((e) => {
             console.log(e);
-            
+
             res.status(400).send(e)
         });
     });
@@ -63,11 +61,11 @@ async function routes(fastify, options) {
     });
     //get product sales records using filter
     //:type can be -> Sales, Purchase, SalesReturn, PurchaseReturn
-    //Filter has to be json eg : { id:2 }
-    fastify.post('/resords/:type',{ preHandler:authentic },(req,res)=>{
-        records(req.params.type,req.body).then((result)=>{
+    //Filter has to be json Object eg : { id:2 }
+    fastify.post('/records/:type', { preHandler: authentic }, (req, res) => {
+        records(req.params.type, req.body).then((result) => {
             res.status(200).send(result);
-        }).catch((e)=>{res.status(400).send(e)})
+        }).catch((e) => { res.status(400).send(e) })
     });
 };
 

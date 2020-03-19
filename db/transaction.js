@@ -24,20 +24,32 @@ const addNewTransaction = (table, data) => {
 const readTransactionDetail = (table, id) => {
     return read(table, id)
         .then((result) => {
+            if(result.alert){
+                throw result.alert;
+            }
             //getting person name and adding to result array
-            return Promise.all([read('persons', result[0].personId), result])
+            return Promise.all([read('persons', result[0].personId), result]);
         })
         .then(([res, result]) => {
+            if(res.alert){
+                throw res.alert;
+            }
             result[0].person = res[0].name;
             //getting username and adding to result array
             return Promise.all([read('users', result[0].userId), result])
         })
         .then(([res, result]) => {
+            if(res.alert){
+                throw res.alert;
+            }
             result[0].user = res[0].fullName;
             //getting transaction details and adding to result array
             return Promise.all([readWhere('transactionDetails', { transactionId: result[0].id }), result])
         })
         .then(([detail, result]) => {
+            if(detail.alert){
+                throw detail.alert;
+            }
             result[0]['detail'] = detail;
             //getting product name for each product in productDetails result adding to array
             return getProductName(result[0])
@@ -53,14 +65,15 @@ const deleteTransaction = (table, id) => {
     return readTransactionDetail(table, id)
         .then((result) => {
             //first deletes all entries from transactionDetails table as per given transaction Id
+            
             return Promise.all([deleteWhere('transactionDetails', { 'transactionId': id }), result]);
         }).then((result) => {
             //after deleting associated entries from transactionDetails it will delete transaction entry
             //from transaction table
+
             updateStockOnDelete(result[1]);
             return del(table, id);
         }).then((result) => {
-            //console.log(result);
             return result;
         }).catch((err) => {
             return err;
