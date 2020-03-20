@@ -41,7 +41,7 @@ const deleteWhere = (table, filter) => {
 }
 //Get Specific fields from table using given critarea
 const getFields = (table,fields,filter) => {
-    return select(fields).table(table).where(filter).then((result)=>{
+    return knex.select(fields).table(table).where(filter).then((result)=>{
         return (result.length > 0) ? result : `Unable to find Record with Given Search Critarea(filter) from ${table} Table.`;
     });
 }
