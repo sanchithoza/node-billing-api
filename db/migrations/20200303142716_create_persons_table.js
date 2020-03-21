@@ -8,7 +8,7 @@ exports.up = function(knex,Promise) {
             table.string('gstNo')
             table.string('contactNo').notNullable()
             table.string('email')
-            table.string('addresssLine1').notNullable()
+            table.string('addressLine1').notNullable()
             table.string('addressLine2')
             table.string('city').notNullable()
             table.string('state').notNullable()

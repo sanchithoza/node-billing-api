@@ -1,7 +1,7 @@
 var addPersonSchema = {
     body:{
         type:'object',
-        required:['name','relation','contactNo','addresssLine1','city','state'],
+        required:['name','relation','contactNo','addressLine1','city','state'],
         properties:{
             businessName:{
                 "type":"string"
@@ -25,7 +25,7 @@ var addPersonSchema = {
                 "type":"string",
                 "format":"email"
             },
-            addresssLine1:{
+            addressLine1:{
                 "type":"string",
                 minLength:1
             },

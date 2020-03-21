@@ -82,11 +82,10 @@ const deleteTransaction = (table, id) => {
 
 const updateTransaction = (table, data, id) => {
     return deleteTransaction(table, id).then((result) => {
-        console.log("delete :", result);
-        return addNewTransaction(table, data).then((result) => {
-            console.log("insert :", result);
+         return addNewTransaction(table, data).then((result) => {
+        return result;
         }).catch((err) => {
-            console.log("err : ", err);
+            return err;
         });
     })
 

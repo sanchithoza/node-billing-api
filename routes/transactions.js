@@ -1,4 +1,4 @@
-const { readAll, readWhere } = require('./../db/crud');
+const { readAll } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
 const { readTransactionDetail, addNewTransaction, deleteTransaction, updateTransaction } = require('./../db/transaction');
 const { addTransactionSchema } = require('./../schema/transactionSchema');
@@ -28,12 +28,6 @@ async function routes(fastify, options) {
     //to get details of a perticular transaction by transactionID
     fastify.get('/:id', { preHandler: authentic }, (req, res) => {
         readTransactionDetail('transactions', req.params.id).then((result) => {
-            res.status(200).send(result);
-        }).catch((err) => res.status(400).send(err));
-    });
-    //to get filterd list of transaction by sending filter critaria in req.body
-    fastify.post('/filter', { preHandler: authentic }, (req, res) => {
-        readWhere('transactions', req.body).then((result) => {
             res.status(200).send(result);
         }).catch((err) => res.status(400).send(err));
     });

@@ -25,11 +25,11 @@ async function routes(fastify, options) {
         });
     };
     //Add New User
-    fastify.post('/',{ preHandler: authentic }, (req, res) => {
-        insert('users', req.body).then((result) => {
-            res.status(200).send(result);
-        }).catch((err) => res.status(400).send(err));
-    });
+    //fastify.post('/',{ preHandler: authentic }, (req, res) => {
+      //  insert('users', req.body).then((result) => {
+       //     res.status(200).send(result);
+       // }).catch((err) => res.status(400).send(err));
+   // });
     //get All Users
     fastify.get('/', { preHandler: authentic },(req, res) => {
         readAll('users').then((result) => {
@@ -56,7 +56,10 @@ async function routes(fastify, options) {
         }).catch((err) => res.status(400).send(err));
     });
     //delete user by id
-    fastify.delete('/:id', (req, res) => {
+    fastify.delete('/:id',
+     {
+         preHandler:authentic
+     },(req, res) => {
         del('users', req.params.id).then((result) => {
             res.status(200).send(result);
         }).catch((err) => res.status(400).send(err));
@@ -101,9 +104,7 @@ async function routes(fastify, options) {
         if (req.validationError) {
             res.status(422).send(req.validationError);
         }
-        console.log(req.body);
-        
-        //hashing password
+       //hashing password
         req.body.password = SHA256(req.body.password).toString();
         //generating token
         req.body.token = fastify.jwt.sign({ 'id': req.body.id, 'access': req.body.access }).toString();

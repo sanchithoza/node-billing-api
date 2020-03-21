@@ -1,6 +1,5 @@
 const { insert, read, readAll, update, del } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
-const { getPersonalAccount } = require('./../db/person');
 const { addPersonSchema } = require('./../schema/personSchema');
 async function routes(fastify, options) {
     //function to authenticate request
@@ -44,6 +43,8 @@ async function routes(fastify, options) {
         insert('persons', req.body).then((result) => {
             res.status(200).send(result);
         }).catch((e) => {
+            console.log(e);
+            
             res.status(400).send('error >', e)
         });
     });
@@ -59,11 +60,6 @@ async function routes(fastify, options) {
             res.status(200).send(result);
         }).catch((e) => res.status(400).send(e));
     });
-    //geting a personl account
-    fastify.get('/account/:id', { preHandler: authentic }, (req, res) => {
-        getPersonalAccount(req.params.id).then((result) => {
-            res.status(200).send(result);
-        }).catch((err) => res.status(400).send(err));
-    });
+   
 };
 module.exports = routes;

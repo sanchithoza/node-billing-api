@@ -1,6 +1,5 @@
 const { insert, read, readAll, update, del } = require('./../db/crud');
 const { authenticate } = require('./../middleware/authentication');
-const { records } = require('./../db/product');
 const { addProductSchema } = require('./../schema/productSchema');
 async function routes(fastify, options) {
     var authentic = (req, res, done) => {
@@ -59,14 +58,7 @@ async function routes(fastify, options) {
             res.status(200).send(result);
         }).catch((e) => res.status(400).send(e));
     });
-    //get product sales records using filter
-    //:type can be -> Sales, Purchase, SalesReturn, PurchaseReturn
-    //Filter has to be json Object eg : { id:2 }
-    fastify.post('/records/:type', { preHandler: authentic }, (req, res) => {
-        records(req.params.type, req.body).then((result) => {
-            res.status(200).send(result);
-        }).catch((e) => { res.status(400).send(e) })
-    });
+    
 };
 
 module.exports = routes;
